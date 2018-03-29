@@ -1,89 +1,33 @@
-import childProcess from 'child_process'
-import fs from 'fs'
-import { promisify } from 'util'
-import execa from 'execa'
-import dot from 'dot-prop'
 import { h, Component, Text } from 'ink'
-import terminal from 'term-size'
-import TextInput from 'ink-text-input'
-import SelectInput from 'ink-select-input'
 import Spinner from 'ink-spinner'
+import TextInput from 'ink-text-input'
 
-import { search } from './algolia'
-
-const canAccessFile = promisify(fs.access)
-const exec = promisify(childProcess.exec)
+import { search, getPackage, AlgoliaLogo } from './algolia'
+import { install } from './install'
 
 // Helpers -------------------------------------------------------------------
 
-// Terminal
-
-const maxCellSize = () => terminal().columns / 4
-
-// Yarn
-
-const isYarnInstalled = async () => {
-   try {
-      await exec(`yarnpkg --version`, { stdio: `ignore` })
-      return true
-   } catch (err) {
-      return false
-   }
-}
-
-const shouldUseYarn = async () => {
-   try {
-      await canAccessFile('package-lock.json')
-      return false
-   } catch (err) {
-      return isYarnInstalled()
-   }
-}
-
-// Additional
-
-const notEmpty = x => x.length !== 0
+const notEmpty = x => x.length > 0
 const isEmpty = x => x.length === 0
-const getCellPadding = (pkgs, pkg) => attr => {
-   const cells = pkgs.map(_pkg => dot.get(_pkg, attr))
 
-   const cellWidth = Math.max(...cells.map(cell => cell ? cell.length : 0))
+// Progress Constants
 
-   const cellValueWidth = dot.get(pkg, attr) === null ? 0 : dot.get(pkg, attr).length
-   const width = cellWidth - cellValueWidth
+const PROGRESS_NOT_LOADED = 'not_loaded'
+const PROGRESS_LOADING = 'loading'
+const PROGRESS_LOADED = 'loaded'
+const PROGRESS_ERROR = 'error'
 
-   return ` `.repeat(width)
-}
+// Stage Constants
 
-// Progress
-
-const PROGRESS_NOT_LOADED = 0
-const PROGRESS_LOADING = 1
-const PROGRESS_LOADED = 2
-const PROGRESS_ERROR = 3
+const PHASE_SEARCH = 'search'
+const PHASE_SUGGEST = 'suggest'
+const PHASE_INSTALL = 'install'
 
 // Emma ----------------------------------------------------------------------
 
-// Package
-
-const PackageAttribute = ({ pkg, attr, ...props }) => (
-   <Text {...props}>
-      {`${dot.get(pkg, attr)} ${pkg._cell(attr)}`.slice(0, maxCellSize())}
-   </Text>
-)
-
-const Package = pkg => (
-   <Text>
-      <PackageAttribute pkg={pkg} attr="humanDownloadsLast30Days"/>
-      <PackageAttribute pkg={pkg} attr="name" blueBright bold/>
-      <PackageAttribute pkg={pkg} attr="owner.name" cyan/>
-      <PackageAttribute pkg={pkg} attr="description" bold/>
-   </Text>
-)
-
 // Search
 
-const Search = ({ value, onChange, onSubmit }) => (
+const Search = ({ value, onChange }) => (
    <div>
       <Text bold white>
          {`Search packages 📦  : `}
@@ -91,7 +35,6 @@ const Search = ({ value, onChange, onSubmit }) => (
       <TextInput
          value={value}
          onChange={onChange}
-         onSubmit={onSubmit}
          placeholder="..."
       />
    </div>
@@ -138,7 +81,7 @@ const SearchResults = ({ foundPackages, onToggle, loading }) => {
          {isEmpty(foundPackages) && (
             <NotFoundInfo/>
          )}
-         <AlgoliaInfo/>
+         <AlgoliaLogo/>
          {loading === PROGRESS_LOADING && (
             <div>
                <Text bold>
@@ -178,15 +121,7 @@ const ErrorInfo = () => (
    </div>
 )
 
-const AlgoliaInfo = () => (
-   <div>
-      <Text>Search powered by</Text>
-      <Text blue> Algolia</Text>
-      <Text>.</Text>
-   </div>
-)
-
-// Emma
+// Emma ----------------------------------------------------------------------
 
 class Emma extends Component {
    constructor(props) {
@@ -194,9 +129,10 @@ class Emma extends Component {
 
       this.state = {
          query: '',
+         loading: PROGRESS_NOT_LOADED,
          foundPackages: [],
          selectedPackages: [],
-         loading: PROGRESS_NOT_LOADED
+         phase: PHASE_SEARCH
       }
 
       this.handleQueryChange = this.handleQueryChange.bind(this)
@@ -220,9 +156,9 @@ class Emma extends Component {
             {loading === PROGRESS_ERROR && <ErrorInfo/>}
             {notEmpty(query) && (
                <SearchResults
-                  foundPackages={foundPackages}
-                  onToggle={this.handleTogglePackage}
-                  loading={loading}
+             foundPackages={foundPackages}
+             onToggle={this.handleTogglePackage}
+             loading={loading}
                />
             )}
             {notEmpty(selectedPackages) && (
@@ -235,7 +171,8 @@ class Emma extends Component {
    async handleQueryChange(query) {
       this.setState({
          query,
-         loading: PROGRESS_LOADING
+         loading: PROGRESS_LOADING,
+         phase: PHASE_SEARCH
       })
 
       try {
@@ -252,29 +189,6 @@ class Emma extends Component {
             loading: PROGRESS_ERROR
          })
       }
-   }
-
-   async fetchPackages(query) {
-      const res = await search({
-         query,
-         attributesToRetrieve: [
-            'name',
-            'version',
-            'description',
-            'owner',
-            'humanDownloadsLast30Days'
-         ],
-         offset: 0,
-         length: 5
-      })
-
-      const { hits } = res
-      const packages = hits.map(hit => ({
-         ...hit,
-         _cell: getCellPadding(hits, hit)
-      }))
-
-      return packages
    }
 
    handleTogglePackage(pkg) {
@@ -314,26 +228,35 @@ class Emma extends Component {
          this.props.onExit()
       }
 
-      // ENV
-      const isDev = this.props.dev
-      const yarn = await shouldUseYarn()
-      const env = yarn ? 'yarnpkg' : 'npm'
-      const arg = yarn ? ['add'] : ['install', '--save']
-      const devArg = yarn ? '-D' : '--save-dev'
-
-      // Packages
-      const packages = selectedPackages.map(pkg => pkg.name)
-      const args = [...arg, ...packages, ...(isDev ? [devArg] : [])]
-
-      // Install the queries
-
-      try {
-         await execa.sync(env, args, { stdio: `inherit` })
-      } catch (err) {
-         throw err
-      }
+      await install(selectedPackages)
 
       this.props.onExit()
+   }
+
+   async fetchPackages(query) {
+      const res = await search({
+         query,
+         attributesToRetrieve: [
+            'name',
+            'version',
+            'description',
+            'owner',
+            'humanDownloadsLast30Days'
+         ],
+         offset: 0,
+         length: 5
+      })
+
+      return res.hits
+   }
+
+   async fetchPackage(name) {
+      const res = await getPackage({
+         name,
+         attributesToRetrieve: ['name', 'version', 'description']
+      })
+
+      return res
    }
 }
 

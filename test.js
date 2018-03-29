@@ -1,14 +1,27 @@
 import test from 'ava'
-import { search } from './dist/algolia'
+import { search, getPackage } from './dist/algolia'
 
-test('Algolia search', async t => {
+const pkg = 'graphql-shield'
+
+test('Algolia - search', async t => {
    const res = await search({
-      query: 'graphql-shield',
+      query: pkg,
       attributesToRetrieve: ['name'],
       attributesToHighlight: [],
       offset: 0,
       length: 1
    })
 
-   t.is(res.hits[0].name, 'graphql-shield')
+   t.is(res.hits[0].name, pkg)
+})
+
+test('Algolia - get package', async t => {
+   const res = await getPackage({
+      name: pkg,
+      attributesToRetrive: ['name', 'readme']
+   })
+
+   console.log(res)
+
+   t.is(res.name, pkg)
 })

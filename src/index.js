@@ -18,23 +18,16 @@ const cli = meow(`
      $ emma
 
    Example
-     $ emma -D
+     $ emma
 
    Options
-     --dev -D      Add to dev dependencies.
+     - no options, really simple!
 
    Run without package-name to enter live search.
    Use keyboard to search through package library.
    Use up/down to select packages.
    Click enter to trigger the install.   
-`, {
-   flags: {
-      dev: {
-         type: 'boolean',
-         alias: 'D'
-      }
-   }
-})
+`)
 
 const main = () => {
    let unmount // eslint-disable-line prefer-const
@@ -49,10 +42,8 @@ const main = () => {
       process.exit()
    }
 
-   const { dev } = cli.flags
-
    // Uses `h` instead of JSX to avoid transpiling this file
-   unmount = render(h(emma, { dev, onError, onExit }))
+   unmount = render(h(emma, { onError, onExit }))
 }
 
 main()
