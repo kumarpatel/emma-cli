@@ -71,4 +71,6 @@ export const install = async packages => {
    if (notEmpty(devDependencies)) {
       await installPackages(cmds.name, cmds.addDevDependency, devDependencies)
    }
+
+   return true
 }

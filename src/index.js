@@ -1,15 +1,9 @@
 #!/usr/bin/env node
 
 import meow from 'meow'
-import { h, render } from 'ink'
 import updateNotifier from 'update-notifier'
 
-import emma from './emma'
-
-// Notify updater
-const pkg = require(`../package.json`)
-
-updateNotifier({ pkg }).notify()
+import { commands } from './commands'
 
 // CLI
 
@@ -29,21 +23,5 @@ const cli = meow(`
    Click enter to trigger the install.   
 `)
 
-const main = () => {
-   let unmount // eslint-disable-line prefer-const
+updateNotifier({ pkg: cli.pkg }).notify()
 
-   const onError = () => {
-      unmount()
-      process.exit(1)
-   }
-
-   const onExit = () => {
-      unmount()
-      process.exit()
-   }
-
-   // Uses `h` instead of JSX to avoid transpiling this file
-   unmount = render(h(emma, { onError, onExit }))
-}
-
-main()

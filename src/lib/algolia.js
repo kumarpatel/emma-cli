@@ -1,4 +1,3 @@
-import { h, Text } from 'ink'
 import algoliasearch from 'algoliasearch'
 
 // Client
@@ -17,13 +16,3 @@ export const search = query => client.search(query)
 
 export const getPackage = ({ name, attributesToRetrive }) =>
    client.getObject(name, attributesToRetrive)
-
-// Logo
-
-export const AlgoliaLogo = () => (
-   <div>
-      <Text>Search powered by</Text>
-      <Text blue> Algolia</Text>
-      <Text>.</Text>
-   </div>
-)

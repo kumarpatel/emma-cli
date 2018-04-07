@@ -156,9 +156,9 @@ class Emma extends Component {
             {loading === PROGRESS_ERROR && <ErrorInfo/>}
             {notEmpty(query) && (
                <SearchResults
-             foundPackages={foundPackages}
-             onToggle={this.handleTogglePackage}
-             loading={loading}
+                  foundPackages={foundPackages}
+                  onToggle={this.handleTogglePackage}
+                  loading={loading}
                />
             )}
             {notEmpty(selectedPackages) && (
