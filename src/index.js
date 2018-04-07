@@ -5,23 +5,53 @@ import updateNotifier from 'update-notifier'
 
 import { commands } from './commands'
 
+// Helpers
+
+const shift = ([_, ...xs]) => xs
+const first = ([x, ..._]) => x
+
 // CLI
 
 const cli = meow(`
    Usage
-     $ emma
+     $ emma [<command>]
 
-   Example
-     $ emma
+   Commands
+     $ ${Object.keys(commands)}
 
    Options
-     - no options, really simple!
+     -- help: get help with command
 
-   Run without package-name to enter live search.
-   Use keyboard to search through package library.
-   Use up/down to select packages.
-   Click enter to trigger the install.   
-`)
+   Powered by Algolia, Prisma and Zeit.
+`, {
+   autoHelp: false
+})
 
 updateNotifier({ pkg: cli.pkg }).notify()
 
+// Commands
+
+function main(cli) {
+   const { input, flags } = cli
+
+   // Defaults
+
+   if (input.length === 0) {
+      if (flags.help) {
+         return cli.showHelp()
+      }
+      return commands.search.run(shift(input), flags)
+   }
+
+   const command = commands[first(input)]
+
+   if (!command) {
+      return cli.showHelp()
+   }
+
+   const subcli = meow(command.options)
+
+   return command.run(shift(subcli.input), subcli.flags)
+}
+
+main(cli)

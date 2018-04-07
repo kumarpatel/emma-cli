@@ -12,8 +12,25 @@ class Emma extends Component {
 
 // Command
 
-export function setFlags(meow) {
-   console.log(meow)
+export const options = {
+   description: `Search and install packages and playlists.`,
+   help: `
+      Usage
+      $ emma search
+
+      Examples
+      $ emma search
+
+      Options
+      - no options, really simple!  
+   `,
+   flags: {
+      verbose: {
+         type: 'boolean',
+         alias: 'v',
+         default: false
+      }
+   }
 }
 
 export async function run() {
