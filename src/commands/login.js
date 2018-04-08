@@ -81,7 +81,6 @@ class EmmaLogin extends Component {
             error: this.handleError
          })
       } catch (err) {
-         throw err
          this.handleError(err)
       }
    }
