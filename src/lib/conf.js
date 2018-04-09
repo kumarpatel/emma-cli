@@ -20,3 +20,7 @@ export function saveAuthToken(token) {
 export function getAuthToken() {
    return config.get('token')
 }
+
+export function resetAuthToken() {
+   return config.delete('token')
+}

@@ -69,7 +69,7 @@ class EmmaLogin extends Component {
 
          // Open URL
 
-         await opn(url)
+         opn(url)
 
          // Wait for verification
 
@@ -85,15 +85,13 @@ class EmmaLogin extends Component {
       }
    }
 
-   handleTicketVerification(ticket) {
+   async handleTicketVerification(ticket) {
       try {
          const { token } = ticket.data.token
 
          saveAuthToken(token)
 
-         this.setState({
-            status: Status.AUTHENTICATED
-         })
+         await this.setState({ status: Status.AUTHENTICATED })
 
          this.props.onExit()
       } catch (err) {
@@ -105,7 +103,7 @@ class EmmaLogin extends Component {
       this.setState({
          status: Status.ERROR
       })
-      throw err
+      this.props.onError(err)
    }
 
    render() {
@@ -114,29 +112,23 @@ class EmmaLogin extends Component {
       return (
          <div>
             {status === Status.TICKET_NOT_REQUESTED && (
-               <div>
-                  <Text>Request Authentication Ticket.</Text>
-               </div>
+               <Text>Request Authentication Ticket.</Text>
             )}
             {status === Status.TICKET_REQUESTING && (
-               <div>
+               <span>
                   <Spinner green/> Waiting for ticket
-               </div>
+               </span>
             )}
             {status === Status.WAITING_FOR_VERIFICATION && (
-               <div>
+               <span>
                   <Spinner blue/> Waiting for ticket verification
-               </div>
+               </span>
             )}
             {status === Status.AUTHENTICATED && (
-               <div>
-                  <Text>You have successfully loged in! 🎉</Text>
-               </div>
+               <Text>You have successfully loged in! 🎉</Text>
             )}
             {status === Status.ERROR && (
-               <div>
-                  <Text>Something went wrong.</Text>
-               </div>
+               <Text>Something went wrong.</Text>
             )}
          </div>
       )
