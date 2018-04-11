@@ -1,20 +1,46 @@
 import { render, h, Component } from 'ink'
 
-// Emma
+// Components
+
+import { Search } from '../components/Search'
+
+// Helpers -------------------------------------------------------------------
+
+const notEmpty = x => x.length > 0
+const isEmpty = x => x.length === 0
+
+// Emma ----------------------------------------------------------------------
 
 class Emma extends Component {
-   render() {
-      return (
-         <div>Works</div>
-      )
-   }
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      query: '',
+      packages: [],
+    }
+  }
+
+  render() {
+    const { query } = this.state
+
+    return (
+      <div>
+        <Search
+          label="Search packages 📦 🎧  : "
+          value={query}
+          onChange={this.handleSearch}
+        />
+      </div>
+    )
+  }
 }
 
-// Command
+// Command -------------------------------------------------------------------
 
 export const options = {
-   description: `Search and install packages and playlists.`,
-   help: `
+  description: `Search and install packages and playlists.`,
+  help: `
       Usage
       $ emma search
 
@@ -24,28 +50,28 @@ export const options = {
       Options
       - no options, really simple!  
    `,
-   flags: {
-      verbose: {
-         type: 'boolean',
-         alias: 'v',
-         default: false
-      }
-   }
+  flags: {
+    verbose: {
+      type: 'boolean',
+      alias: 'v',
+      default: false,
+    },
+  },
 }
 
 export async function run() {
-   let unmount // eslint-disable-line prefer-const
+  let unmount // eslint-disable-line prefer-const
 
-   const onError = () => {
-      unmount()
-      process.exit(1)
-   }
+  const onError = () => {
+    unmount()
+    process.exit(1)
+  }
 
-   const onExit = () => {
-      unmount()
-      process.exit()
-   }
+  const onExit = () => {
+    unmount()
+    process.exit()
+  }
 
-   // Uses `h` instead of JSX to avoid transpiling this file
-   unmount = render(h(Emma, { onError, onExit }))
+  // Uses `h` instead of JSX to avoid transpiling this file
+  unmount = render(h(Emma, { onError, onExit }))
 }

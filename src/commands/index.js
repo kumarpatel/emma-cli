@@ -8,20 +8,20 @@ import * as logout from './logout'
 import * as create from './create'
 
 export const commands = {
-   search,
-   pkg,
-   playlist,
-   add,
-   remove,
-   login,
-   logout,
-   create
+  search,
+  pkg,
+  playlist,
+  add,
+  remove,
+  login,
+  logout,
+  create,
 }
 
 // Validation
 
 Object.keys(commands).forEach(command => {
-   if (!commands[command].options || !commands[command].run) {
-      throw new Error(`Command ${command} missing definition!`)
-   }
+  if (!commands[command].options || !commands[command].run) {
+    throw new Error(`Command ${command} missing definition!`)
+  }
 })

@@ -1,8 +1,8 @@
 export const options = {
-   description: `
+  description: `
       Install Emma playlist.
    `,
-   help: `
+  help: `
       Usage
       $ emma add <playlist>
 
@@ -11,9 +11,7 @@ export const options = {
 
       Options
       - no options, really simple!  
-   `
+   `,
 }
 
-export async function run() {
-
-}
+export async function run() {}

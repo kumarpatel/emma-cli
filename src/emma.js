@@ -28,236 +28,226 @@ const PHASE_INSTALL = 'install'
 // Search
 
 const Search = ({ value, onChange }) => (
-   <div>
-      <Text bold white>
-         {`Search packages 📦  : `}
-      </Text>
-      <TextInput
-         value={value}
-         onChange={onChange}
-         placeholder="..."
-      />
-   </div>
+  <div>
+    <Text bold white>
+      {`Search packages 📦  : `}
+    </Text>
+    <TextInput value={value} onChange={onChange} placeholder="..." />
+  </div>
 )
 
 // Overview
 
 const SelectedPackage = ({ pkg }) => (
-   <div>
-      <Text magenta>
-         {` ›`}
-      </Text>
-      <Text bold white>
-         {` ${pkg.name} `}
-      </Text>
-      <Text grey>
-         {` ${pkg.version} `}
-      </Text>
-   </div>
+  <div>
+    <Text magenta>{` ›`}</Text>
+    <Text bold white>
+      {` ${pkg.name} `}
+    </Text>
+    <Text grey>{` ${pkg.version} `}</Text>
+  </div>
 )
 
 const SelectedPackages = ({ selectedPackages }) => (
-   <div>
-      <div/>
-      <div>
-         <Text bold white>Picked: </Text>
-      </div>
-      {selectedPackages.map(pkg => (
-         <SelectedPackage key={pkg.name} pkg={pkg}/>
-      ))}
-   </div>
+  <div>
+    <div />
+    <div>
+      <Text bold white>
+        Picked:{' '}
+      </Text>
+    </div>
+    {selectedPackages.map(pkg => <SelectedPackage key={pkg.name} pkg={pkg} />)}
+  </div>
 )
 
 // Restults
 
 const SearchResults = ({ foundPackages, onToggle, loading }) => {
-   return (
-      <span>
-         <SelectInput
-            items={foundPackages}
-            itemComponent={Package}
-            onSelect={onToggle}
-         />
-         {isEmpty(foundPackages) && (
-            <NotFoundInfo/>
-         )}
-         <AlgoliaLogo/>
-         {loading === PROGRESS_LOADING && (
-            <div>
-               <Text bold>
-                  <Spinner red/> Fetching
-               </Text>
-            </div>
-         )}
-      </span>
-   )
+  return (
+    <span>
+      <SelectInput
+        items={foundPackages}
+        itemComponent={Package}
+        onSelect={onToggle}
+      />
+      {isEmpty(foundPackages) && <NotFoundInfo />}
+      <AlgoliaLogo />
+      {loading === PROGRESS_LOADING && (
+        <div>
+          <Text bold>
+            <Spinner red /> Fetching
+          </Text>
+        </div>
+      )}
+    </span>
+  )
 }
 
 // Info
 
 const SearchInfo = () => (
-   <div>
-      <Text grey>Try typing in to search the database.</Text>
-   </div>
+  <div>
+    <Text grey>Try typing in to search the database.</Text>
+  </div>
 )
 
 const InstallInfo = () => (
-   <div>
-      <Text grey>Press enter to install all of your packages.</Text>
-   </div>
+  <div>
+    <Text grey>Press enter to install all of your packages.</Text>
+  </div>
 )
 
 const NotFoundInfo = () => (
-   <div>
-      <Text grey>
-         {`We couldn't find any package that would match your input...`}
-      </Text>
-   </div>
+  <div>
+    <Text grey>
+      {`We couldn't find any package that would match your input...`}
+    </Text>
+  </div>
 )
 
 const ErrorInfo = () => (
-   <div>
-      <Text red>Check your internet connection.</Text>
-   </div>
+  <div>
+    <Text red>Check your internet connection.</Text>
+  </div>
 )
 
 // Emma ----------------------------------------------------------------------
 
 class Emma extends Component {
-   constructor(props) {
-      super(props)
+  constructor(props) {
+    super(props)
 
-      this.state = {
-         query: '',
-         loading: PROGRESS_NOT_LOADED,
-         foundPackages: [],
-         selectedPackages: [],
-         phase: PHASE_SEARCH
+    this.state = {
+      query: '',
+      loading: PROGRESS_NOT_LOADED,
+      foundPackages: [],
+      selectedPackages: [],
+      phase: PHASE_SEARCH,
+    }
+
+    this.handleQueryChange = this.handleQueryChange.bind(this)
+    this.handleInstall = this.handleInstall.bind(this)
+    this.handleTogglePackage = this.handleTogglePackage.bind(this)
+  }
+
+  render() {
+    const { query, foundPackages, selectedPackages, loading } = this.state
+
+    return (
+      <div>
+        <Search
+          value={query}
+          onChange={this.handleQueryChange}
+          onSubmit={this.handleInstall}
+          loading={loading}
+        />
+        {loading === PROGRESS_NOT_LOADED && <SearchInfo />}
+        {isEmpty(query) && <InstallInfo />}
+        {loading === PROGRESS_ERROR && <ErrorInfo />}
+        {notEmpty(query) && (
+          <SearchResults
+            foundPackages={foundPackages}
+            onToggle={this.handleTogglePackage}
+            loading={loading}
+          />
+        )}
+        {notEmpty(selectedPackages) && (
+          <SelectedPackages selectedPackages={selectedPackages} />
+        )}
+      </div>
+    )
+  }
+
+  async handleQueryChange(query) {
+    this.setState({
+      query,
+      loading: PROGRESS_LOADING,
+      phase: PHASE_SEARCH,
+    })
+
+    try {
+      const res = await this.fetchPackages(query)
+
+      if (this.state.query === query) {
+        this.setState({
+          foundPackages: res,
+          loading: PROGRESS_LOADED,
+        })
       }
-
-      this.handleQueryChange = this.handleQueryChange.bind(this)
-      this.handleInstall = this.handleInstall.bind(this)
-      this.handleTogglePackage = this.handleTogglePackage.bind(this)
-   }
-
-   render() {
-      const { query, foundPackages, selectedPackages, loading } = this.state
-
-      return (
-         <div>
-            <Search
-               value={query}
-               onChange={this.handleQueryChange}
-               onSubmit={this.handleInstall}
-               loading={loading}
-            />
-            {loading === PROGRESS_NOT_LOADED && <SearchInfo/>}
-            {isEmpty(query) && <InstallInfo/>}
-            {loading === PROGRESS_ERROR && <ErrorInfo/>}
-            {notEmpty(query) && (
-               <SearchResults
-                  foundPackages={foundPackages}
-                  onToggle={this.handleTogglePackage}
-                  loading={loading}
-               />
-            )}
-            {notEmpty(selectedPackages) && (
-               <SelectedPackages selectedPackages={selectedPackages}/>
-            )}
-         </div>
-      )
-   }
-
-   async handleQueryChange(query) {
+    } catch (err) {
       this.setState({
-         query,
-         loading: PROGRESS_LOADING,
-         phase: PHASE_SEARCH
+        loading: PROGRESS_ERROR,
       })
+    }
+  }
 
-      try {
-         const res = await this.fetchPackages(query)
+  handleTogglePackage(pkg) {
+    const { selectedPackages, loading } = this.state
 
-         if (this.state.query === query) {
-            this.setState({
-               foundPackages: res,
-               loading: PROGRESS_LOADED
-            })
-         }
-      } catch (err) {
-         this.setState({
-            loading: PROGRESS_ERROR
-         })
-      }
-   }
+    if (loading !== PROGRESS_LOADED) {
+      return
+    }
 
-   handleTogglePackage(pkg) {
-      const { selectedPackages, loading } = this.state
+    const exists = selectedPackages.some(
+      ({ objectID }) => objectID === pkg.objectID,
+    )
 
-      if (loading !== PROGRESS_LOADED) {
-         return
-      }
+    if (exists) {
+      this.setState({
+        query: '',
+        selectedPackages: selectedPackages.filter(
+          ({ objectID }) => objectID !== pkg.objectID,
+        ),
+      })
+    } else {
+      this.setState({
+        query: '',
+        selectedPackages: [...selectedPackages, pkg],
+      })
+    }
+  }
 
-      const exists = selectedPackages.some(
-         ({ objectID }) => objectID === pkg.objectID
-      )
+  async handleInstall() {
+    const { query, selectedPackages } = this.state
 
-      if (exists) {
-         this.setState({
-            query: '',
-            selectedPackages: selectedPackages.filter(
-               ({ objectID }) => objectID !== pkg.objectID
-            )
-         })
-      } else {
-         this.setState({
-            query: '',
-            selectedPackages: [...selectedPackages, pkg]
-         })
-      }
-   }
+    if (notEmpty(query)) {
+      return
+    }
 
-   async handleInstall() {
-      const { query, selectedPackages } = this.state
-
-      if (notEmpty(query)) {
-         return
-      }
-
-      if (isEmpty(selectedPackages)) {
-         this.props.onExit()
-      }
-
-      await install(selectedPackages)
-
+    if (isEmpty(selectedPackages)) {
       this.props.onExit()
-   }
+    }
 
-   async fetchPackages(query) {
-      const res = await search({
-         query,
-         attributesToRetrieve: [
-            'name',
-            'version',
-            'description',
-            'owner',
-            'humanDownloadsLast30Days'
-         ],
-         offset: 0,
-         length: 5
-      })
+    await install(selectedPackages)
 
-      return res.hits
-   }
+    this.props.onExit()
+  }
 
-   async fetchPackage(name) {
-      const res = await getPackage({
-         name,
-         attributesToRetrieve: ['name', 'version', 'description']
-      })
+  async fetchPackages(query) {
+    const res = await search({
+      query,
+      attributesToRetrieve: [
+        'name',
+        'version',
+        'description',
+        'owner',
+        'humanDownloadsLast30Days',
+      ],
+      offset: 0,
+      length: 5,
+    })
 
-      return res
-   }
+    return res.hits
+  }
+
+  async fetchPackage(name) {
+    const res = await getPackage({
+      name,
+      attributesToRetrieve: ['name', 'version', 'description'],
+    })
+
+    return res
+  }
 }
 
 export default Emma

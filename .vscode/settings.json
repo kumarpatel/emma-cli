@@ -1,8 +1,0 @@
-{
-  "editor.formatOnSave": false,
-  "editor.formatOnPaste": false,
-  "xo.enable": true,
-  "editor.autoIndent": true,
-  "editor.detectIndentation": false,
-  "editor.tabSize": 3
-}

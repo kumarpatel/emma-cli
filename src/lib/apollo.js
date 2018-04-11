@@ -11,50 +11,54 @@ import { getMainDefinition } from 'apollo-utilities'
 global.fetch = fetch
 
 const emmaApiUrl = {
-   url: 'http://localhost:4000',
-   ws: 'ws://localhost:4000'
+  url: 'http://localhost:4000',
+  ws: 'ws://localhost:4000',
 }
 
 export function initApollo({ getToken }) {
-   const httpLink = new HttpLink({
-      uri: emmaApiUrl.url
-   })
+  const httpLink = new HttpLink({
+    uri: emmaApiUrl.url,
+  })
 
-   const authLink = new ApolloLink((operation, forward) => {
-      const token = getToken()
+  const authLink = new ApolloLink((operation, forward) => {
+    const token = getToken()
 
-      operation.setContext(({ headers = {} }) => ({
-         headers: {
-            ...headers,
-            Authorization: token ? `Bearer ${token}` : null
-         }
-      }))
-
-      return forward(operation)
-   })
-
-   const subscriptionsClient = new SubscriptionClient(emmaApiUrl.ws, {
-      reconnect: true
-   }, ws)
-
-   const wsLink = new WebSocketLink(subscriptionsClient)
-
-   // Client
-
-   const link = split(
-      ({ query }) => {
-         const { kind, operation } = getMainDefinition(query)
-         return kind === 'OperationDefinition' && operation === 'subscription'
+    operation.setContext(({ headers = {} }) => ({
+      headers: {
+        ...headers,
+        Authorization: token ? `Bearer ${token}` : null,
       },
-      wsLink,
-      from([authLink, httpLink]),
-   )
+    }))
 
-   const client = new ApolloClient({
-      link,
-      cache: new InMemoryCache(),
-      ssrMode: true
-   })
+    return forward(operation)
+  })
 
-   return client
+  const subscriptionsClient = new SubscriptionClient(
+    emmaApiUrl.ws,
+    {
+      reconnect: true,
+    },
+    ws,
+  )
+
+  const wsLink = new WebSocketLink(subscriptionsClient)
+
+  // Client
+
+  const link = split(
+    ({ query }) => {
+      const { kind, operation } = getMainDefinition(query)
+      return kind === 'OperationDefinition' && operation === 'subscription'
+    },
+    wsLink,
+    from([authLink, httpLink]),
+  )
+
+  const client = new ApolloClient({
+    link,
+    cache: new InMemoryCache(),
+    ssrMode: true,
+  })
+
+  return client
 }

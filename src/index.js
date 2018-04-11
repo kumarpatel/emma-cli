@@ -12,7 +12,8 @@ const first = ([x, ..._]) => x
 
 // CLI
 
-const cli = meow(`
+const cli = meow(
+  `
    Usage
      $ emma [<command>]
 
@@ -23,35 +24,37 @@ const cli = meow(`
      -- help: get help with command
 
    Powered by Algolia, Prisma and Zeit.
-`, {
-   autoHelp: false
-})
+`,
+  {
+    autoHelp: false,
+  },
+)
 
 updateNotifier({ pkg: cli.pkg }).notify()
 
 // Commands
 
 function main(cli) {
-   const { input, flags } = cli
+  const { input, flags } = cli
 
-   // Defaults
+  // Defaults
 
-   if (input.length === 0) {
-      if (flags.help) {
-         return cli.showHelp()
-      }
-      return commands.search.run(shift(input), flags)
-   }
-
-   const command = commands[first(input)]
-
-   if (!command) {
+  if (input.length === 0) {
+    if (flags.help) {
       return cli.showHelp()
-   }
+    }
+    return commands.search.run(shift(input), flags)
+  }
 
-   const subcli = meow(command.options)
+  const command = commands[first(input)]
 
-   return command.run(shift(subcli.input), subcli.flags)
+  if (!command) {
+    return cli.showHelp()
+  }
+
+  const subcli = meow(command.options)
+
+  return command.run(shift(subcli.input), subcli.flags)
 }
 
 main(cli)
