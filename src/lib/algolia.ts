@@ -1,4 +1,4 @@
-import algoliasearch from 'algoliasearch'
+import * as algoliasearch from 'algoliasearch'
 
 // Client
 
@@ -18,7 +18,8 @@ const packagesIndex = client.initIndex(algolia.indices.packages)
 
 // Methods
 
-export const search = query => packagesIndex.search(query)
+export const search = (query: algoliasearch.AlgoliaQueryParameters) =>
+  packagesIndex.search(query)
 
-export const getPackage = ({ name, attributesToRetrive }) =>
-  client.getObject(name, attributesToRetrive)
+export const getPackage = (name: string, attributesToRetrive: string[]) =>
+  packagesIndex.getObject(name, attributesToRetrive)

@@ -6,15 +6,34 @@ import Spinner from 'ink-spinner'
 import { withApollo } from '../hocs/withApollo'
 import { saveAuthToken } from '../lib/conf'
 
-// Emma Login
+interface EmmaLoginProps {
+  apollo: any
+  onExit: () => void
+  onError: (err: Error) => void
+}
 
-const Status = {
+interface EmmaLoginState {
+  status: Status
+}
+
+type Status =
+  | 'TICKET_NOT_REQUESTED'
+  | 'TICKET_REQUESTING'
+  | 'WAITING_FOR_VERIFICATION'
+  | 'AUTHENTICATED'
+  | 'ERROR'
+
+// Helpers
+
+const Status: { [ket: string]: Status } = {
   TICKET_NOT_REQUESTED: 'TICKET_NOT_REQUESTED',
   TICKET_REQUESTING: 'TICKET_REQUESTING',
   WAITING_FOR_VERIFICATION: 'WAITING_FOR_VERIFICATION',
   AUTHENTICATED: 'AUTHENTICATED',
   ERROR: 'ERROR',
 }
+
+// GraphQL Queries and Mutations
 
 const AUTHENTICATION_TICKET_MUTATION = gql`
   mutation Ticket {
@@ -37,12 +56,14 @@ const TICEKT_VERIFICATION_SUBSCRIPTION = gql`
   }
 `
 
-class EmmaLogin extends Component {
+// EmmaLogin -----------------------------------------------------------------
+
+class EmmaLogin extends Component<EmmaLoginProps, EmmaLoginState> {
   constructor(props) {
     super(props)
 
     this.state = {
-      status: Status.NOT_REQUESTED,
+      status: Status.TICKET_NOT_REQUESTED,
     }
 
     this.handleTicketVerification = this.handleTicketVerification.bind(this)
@@ -101,7 +122,7 @@ class EmmaLogin extends Component {
     }
   }
 
-  handleError(err) {
+  handleError(err: Error) {
     this.setState({
       status: Status.ERROR,
     })
@@ -149,7 +170,7 @@ export const options = {
 }
 
 export async function run() {
-  let unmount // eslint-disable-line prefer-const
+  let unmount: any // eslint-disable-line prefer-const
 
   const onError = () => {
     unmount()

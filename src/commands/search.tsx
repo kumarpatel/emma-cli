@@ -1,17 +1,22 @@
 import { render, h, Component } from 'ink'
 
-// Components
+import { Package } from '../lib/install'
 
-import { Search } from '../components/Search'
+import Search, { SearchBar, PackageHits } from '../components/Search'
 
-// Helpers -------------------------------------------------------------------
+interface EmmaProps {
+  onError: (err: Error) => void
+  onExit: () => void
+}
 
-const notEmpty = x => x.length > 0
-const isEmpty = x => x.length === 0
+interface EmmaState {
+  query: string
+  packages: Package[]
+}
 
 // Emma ----------------------------------------------------------------------
 
-class Emma extends Component {
+class Emma extends Component<EmmaProps, EmmaState> {
   constructor(props) {
     super(props)
 
@@ -19,6 +24,10 @@ class Emma extends Component {
       query: '',
       packages: [],
     }
+  }
+
+  handleSearch(query: string) {
+    console.log(query)
   }
 
   render() {
@@ -60,7 +69,7 @@ export const options = {
 }
 
 export async function run() {
-  let unmount // eslint-disable-line prefer-const
+  let unmount: any
 
   const onError = () => {
     unmount()

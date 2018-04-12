@@ -3,9 +3,25 @@ import Spinner from 'ink-spinner'
 
 import { resetAuthToken, getAuthToken } from '../lib/conf'
 
-// Emma Logout
+interface EmmaLogoutProps {
+  onError: (err: Error) => void
+  onExit: () => void
+}
 
-const Status = {
+interface EmmaLogoutState {
+  status: Status
+}
+
+type Status =
+  | 'DETERMINING_AUTH'
+  | 'AUTHENTICATED'
+  | 'NOT_AUTHENTICATED'
+  | 'LOGGED_OUT'
+  | 'ERROR'
+
+// Helpers
+
+const Status: { [status: string]: Status } = {
   DETERMINING_AUTH: 'DETERMINING_AUTH',
   AUTHENTICATED: 'AUTHENTICATED',
   NOT_AUTHENTICATED: 'NOT_AUTHENTICATED',
@@ -13,7 +29,9 @@ const Status = {
   ERROR: 'ERROR',
 }
 
-class EmmaLogout extends Component {
+// EmmaLogout
+
+class EmmaLogout extends Component<EmmaLogoutProps, EmmaLogoutState> {
   constructor(props) {
     super(props)
 
@@ -86,7 +104,7 @@ export const options = {
 }
 
 export async function run() {
-  let unmount // eslint-disable-line prefer-const
+  let unmount: any
 
   const onError = () => {
     unmount()

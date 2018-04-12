@@ -1,9 +1,22 @@
 import { h, Component } from 'ink'
 import { search } from '../../lib/algolia'
+import { Package, Playlist } from '../../lib/install'
 
-// Loading Constants
+interface SearchProps {
+  onPackageToggle: (pkg: Package) => any
+}
 
-const Loading = {
+interface SearchState {
+  packages: Package[]
+  playlists: Playlist[]
+  loading: Status
+}
+
+type Status = 'not_loaded' | 'loading' | 'loaded' | 'error'
+
+// Helpers
+
+const Loading: { [status: string]: Status } = {
   NOT_LOADED: 'not_loaded',
   LOADING: 'loading',
   LOADED: 'loaded',
@@ -12,7 +25,7 @@ const Loading = {
 
 // Search
 
-export class Search extends Component {
+export class Search extends Component<SearchProps, SearchState> {
   constructor(props) {
     super(props)
 
@@ -22,8 +35,6 @@ export class Search extends Component {
       loading: Loading.NOT_LOADED,
     }
   }
-
-  componentWillReceiveProps(props) {}
 
   render() {
     const { packages, playlists, loading } = this.state
@@ -36,5 +47,7 @@ export class Search extends Component {
     )
   }
 
-  handleSearch(query) {}
+  handleSearch(query: string) {
+    console.log(query)
+  }
 }

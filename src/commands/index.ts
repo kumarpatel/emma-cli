@@ -7,7 +7,26 @@ import * as login from './login'
 import * as logout from './logout'
 import * as create from './create'
 
-export const commands = {
+interface CommandOptions {
+  [key: string]: any
+}
+
+interface Flags {
+  [flag: string]: boolean
+}
+
+type Command = (input: string[], flags: Flags) => Promise<void>
+
+interface CommandInfo {
+  options: CommandOptions
+  run: Command
+}
+
+interface Commands {
+  [command: string]: CommandInfo
+}
+
+export const commands: Commands = {
   search,
   pkg,
   playlist,
@@ -17,11 +36,3 @@ export const commands = {
   logout,
   create,
 }
-
-// Validation
-
-Object.keys(commands).forEach(command => {
-  if (!commands[command].options || !commands[command].run) {
-    throw new Error(`Command ${command} missing definition!`)
-  }
-})

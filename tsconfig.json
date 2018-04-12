@@ -1,0 +1,18 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "outDir": "dist",
+    "sourceMap": true,
+    "lib": ["es2017", "esnext.asynciterable"],
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "strict": true,
+    "importHelpers": false,
+    "noEmitHelpers": true,
+    "typeRoots": ["node_modules/@types", "ink"]
+  }
+}

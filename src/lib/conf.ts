@@ -1,4 +1,4 @@
-import Conf from 'conf'
+const Conf = require('conf')
 
 const defaults = {
   token: null,
@@ -13,7 +13,7 @@ const config = new Conf({
 
 // Helpers
 
-export function saveAuthToken(token) {
+export function saveAuthToken(token: string) {
   config.set('token', token)
 }
 

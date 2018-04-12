@@ -1,5 +1,5 @@
-import fetch from 'isomorphic-fetch'
-import ws from 'ws'
+import * as fetch from 'isomorphic-fetch'
+import * as ws from 'ws'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloLink, split, from } from 'apollo-link'
@@ -8,6 +8,12 @@ import { WebSocketLink } from 'apollo-link-ws'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { getMainDefinition } from 'apollo-utilities'
 
+interface Global {
+  fetch: any
+}
+
+declare var global: Global
+
 global.fetch = fetch
 
 const emmaApiUrl = {
@@ -15,13 +21,13 @@ const emmaApiUrl = {
   ws: 'ws://localhost:4000',
 }
 
-export function initApollo({ getToken }) {
+export function initApollo(getToken?: () => string) {
   const httpLink = new HttpLink({
     uri: emmaApiUrl.url,
   })
 
   const authLink = new ApolloLink((operation, forward) => {
-    const token = getToken()
+    const token = getToken && getToken()
 
     operation.setContext(({ headers = {} }) => ({
       headers: {
@@ -30,7 +36,7 @@ export function initApollo({ getToken }) {
       },
     }))
 
-    return forward(operation)
+    return forward!(operation)
   })
 
   const subscriptionsClient = new SubscriptionClient(
