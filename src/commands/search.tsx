@@ -1,8 +1,6 @@
 import { render, h, Component } from 'ink'
-
 import { Package } from '../lib/install'
-
-import Search, { SearchBar, PackageHits } from '../components/Search'
+import Search, { SearchBar } from '../components/Search'
 
 interface EmmaProps {
   onError: (err: Error) => void
@@ -30,16 +28,22 @@ class Emma extends Component<EmmaProps, EmmaState> {
     console.log(query)
   }
 
+  handlePackageToggle() {
+    return
+  }
+
   render() {
     const { query } = this.state
 
     return (
       <div>
-        <Search
-          label="Search packages 📦 🎧  : "
-          value={query}
-          onChange={this.handleSearch}
-        />
+        <Search onPackageToggle={this.handlePackageToggle}>
+          <SearchBar
+            label="Search packages 📦 🎧  : "
+            value={query}
+            onChange={this.handleSearch}
+          />
+        </Search>
       </div>
     )
   }

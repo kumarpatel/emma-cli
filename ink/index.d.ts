@@ -1,7 +1,16 @@
 declare module 'ink' {
-  import { createElement, Component as ReactComponent } from 'react'
+  import {
+    createElement,
+    ComponentType as ReactComponentType,
+    Component as ReactComponent,
+    Fragment as ReactFragment,
+    ComponentClass as ReactComponentClass,
+  } from 'react'
 
-  export class Component<Props, State> extends ReactComponent<Props, State> {}
+  export class Component<P, S> extends ReactComponent<P, S> {}
+  export class ComponentType<P> extends ReactComponentType<P> {}
+  export class ComponentClass<P> extends ReactComponentClass<P> {}
+  export class Fragment extends Component<{ children: Element }, {}> {}
   export class Text extends Component<any, any> {}
 
   export const h: typeof createElement

@@ -1,13 +1,12 @@
 import opn from 'opn'
 import gql from 'graphql-tag'
-import { h, render, Component, Text } from 'ink'
+import { h, Component, Text } from 'ink'
 import Spinner from 'ink-spinner'
 
-import { withApollo } from '../hocs/withApollo'
-import { saveAuthToken } from '../lib/conf'
+import { withApollo, WithApolloProps } from '../../hocs/withApollo'
+import { saveAuthToken } from '../../lib/conf'
 
 interface EmmaLoginProps {
-  apollo: any
   onExit: () => void
   onError: (err: Error) => void
 }
@@ -58,10 +57,12 @@ const TICEKT_VERIFICATION_SUBSCRIPTION = gql`
 
 // EmmaLogin -----------------------------------------------------------------
 
-class EmmaLogin extends Component<EmmaLoginProps, EmmaLoginState> {
+class EmmaLogin extends Component<
+  WithApolloProps<EmmaLoginProps>,
+  EmmaLoginState
+> {
   constructor(props) {
     super(props)
-
     this.state = {
       status: Status.TICKET_NOT_REQUESTED,
     }
@@ -156,32 +157,4 @@ class EmmaLogin extends Component<EmmaLoginProps, EmmaLoginState> {
   }
 }
 
-// Command
-
-export const options = {
-  description: 'Login to Emma PKG.',
-  help: `
-      Usage
-      $ emma login
-
-      Options
-      - no options, really simple!  
-   `,
-}
-
-export async function run() {
-  let unmount: any // eslint-disable-line prefer-const
-
-  const onError = () => {
-    unmount()
-    process.exit(1)
-  }
-
-  const onExit = () => {
-    unmount()
-    process.exit()
-  }
-
-  // Uses `h` instead of JSX to avoid transpiling this file
-  unmount = render(h(withApollo(EmmaLogin), { onError, onExit }))
-}
+export default withApollo(EmmaLogin)

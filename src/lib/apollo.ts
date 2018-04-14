@@ -1,5 +1,6 @@
-import * as fetch from 'isomorphic-fetch'
-import * as ws from 'ws'
+import { OperationDefinitionNode } from 'graphql'
+import fetch from 'isomorphic-fetch'
+import ws from 'ws'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloLink, split, from } from 'apollo-link'
@@ -21,7 +22,7 @@ const emmaApiUrl = {
   ws: 'ws://localhost:4000',
 }
 
-export function initApollo(getToken?: () => string) {
+export function initApollo(getToken?: () => string): ApolloClient<any> {
   const httpLink = new HttpLink({
     uri: emmaApiUrl.url,
   })
@@ -53,7 +54,9 @@ export function initApollo(getToken?: () => string) {
 
   const link = split(
     ({ query }) => {
-      const { kind, operation } = getMainDefinition(query)
+      const { kind, operation } = getMainDefinition(
+        query,
+      ) as OperationDefinitionNode
       return kind === 'OperationDefinition' && operation === 'subscription'
     },
     wsLink,

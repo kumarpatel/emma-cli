@@ -1,7 +1,9 @@
 import * as fs from 'fs'
 import * as execa from 'execa'
 
-export interface Playlist {}
+export interface Playlist {
+  name: string
+}
 
 export interface Package {
   name: string

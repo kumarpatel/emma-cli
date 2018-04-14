@@ -1,18 +1,19 @@
-import { h, Component } from 'ink'
+import { h, Component, Fragment } from 'ink'
 import { search } from '../../lib/algolia'
 import { Package, Playlist } from '../../lib/install'
 
-interface SearchProps {
+export interface SearchProps {
   onPackageToggle: (pkg: Package) => any
+  children: Element
 }
 
-interface SearchState {
+export interface SearchState {
   packages: Package[]
   playlists: Playlist[]
   loading: Status
 }
 
-type Status = 'not_loaded' | 'loading' | 'loaded' | 'error'
+export type Status = 'not_loaded' | 'loading' | 'loaded' | 'error'
 
 // Helpers
 
@@ -41,9 +42,9 @@ export class Search extends Component<SearchProps, SearchState> {
     const { children, onPackageToggle } = this.props
 
     return (
-      <>
+      <Fragment>
         <div />
-      </>
+      </Fragment>
     )
   }
 

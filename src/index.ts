@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import * as meow from 'meow'
-import * as updateNotifier from 'update-notifier'
+import meow from 'meow'
+import updateNotifier from 'update-notifier'
 
 import { commands } from './commands'
 
@@ -34,9 +34,7 @@ updateNotifier({ pkg: cli.pkg }).notify()
 
 // Commands
 
-async function main(cli: meow.Result): Promise<void> {
-  const { input, flags } = cli
-
+async function main({ input, flags }: meow.Result): Promise<void> {
   // Defaults
 
   if (input.length === 0) {
