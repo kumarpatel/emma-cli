@@ -1,4 +1,4 @@
-import { h, Component, Fragment } from 'ink'
+import { h, Component } from 'ink'
 import { search } from '../../lib/algolia'
 import { Package, Playlist } from '../../lib/install'
 
@@ -41,11 +41,7 @@ export class Search extends Component<SearchProps, SearchState> {
     const { packages, playlists, loading } = this.state
     const { children, onPackageToggle } = this.props
 
-    return (
-      <Fragment>
-        <div />
-      </Fragment>
-    )
+    return <span>ab</span>
   }
 
   handleSearch(query: string) {

@@ -1,9 +1,9 @@
-// import * as search from './search'
+import * as search from './search'
 import * as pkg from './pkg'
 import * as playlist from './playlist'
 import * as add from './add'
 import * as remove from './remove'
-// import * as login from './login'
+import * as login from './login'
 import * as logout from './logout'
 import * as create from './create'
 
@@ -31,12 +31,12 @@ export interface Commands {
 // Commands
 
 export const commands: Commands = {
-  // search,
+  search,
   pkg,
   playlist,
   add,
   remove,
-  // login,
+  login,
   logout,
   create,
 }

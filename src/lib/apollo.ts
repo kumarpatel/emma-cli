@@ -1,21 +1,13 @@
 import { OperationDefinitionNode } from 'graphql'
 import fetch from 'isomorphic-fetch'
-import ws from 'ws'
+import * as ws from 'ws'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloLink, split, from } from 'apollo-link'
-import { HttpLink } from 'apollo-link-http'
+import { createHttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { getMainDefinition } from 'apollo-utilities'
-
-interface Global {
-  fetch: any
-}
-
-declare var global: Global
-
-global.fetch = fetch
 
 const emmaApiUrl = {
   url: 'http://localhost:4000',
@@ -23,8 +15,9 @@ const emmaApiUrl = {
 }
 
 export function initApollo(getToken?: () => string): ApolloClient<any> {
-  const httpLink = new HttpLink({
+  const httpLink = createHttpLink({
     uri: emmaApiUrl.url,
+    fetch,
   })
 
   const authLink = new ApolloLink((operation, forward) => {

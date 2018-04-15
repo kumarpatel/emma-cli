@@ -15,7 +15,7 @@ export const options = {
 export async function run() {
   let unmount: any
 
-  const onError = () => {
+  const onError = err => {
     unmount()
     process.exit(1)
   }
@@ -25,6 +25,5 @@ export async function run() {
     process.exit()
   }
 
-  // Uses `h` instead of JSX to avoid transpiling this file
   unmount = render(h(EmmaLogin, { onError, onExit }))
 }

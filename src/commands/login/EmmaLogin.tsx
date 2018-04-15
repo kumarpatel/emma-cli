@@ -6,16 +6,16 @@ import Spinner from 'ink-spinner'
 import { withApollo, WithApolloProps } from '../../hocs/withApollo'
 import { saveAuthToken } from '../../lib/conf'
 
-interface EmmaLoginProps {
+export interface EmmaLoginProps {
   onExit: () => void
   onError: (err: Error) => void
 }
 
-interface EmmaLoginState {
+export interface EmmaLoginState {
   status: Status
 }
 
-type Status =
+export type Status =
   | 'TICKET_NOT_REQUESTED'
   | 'TICKET_REQUESTING'
   | 'WAITING_FOR_VERIFICATION'

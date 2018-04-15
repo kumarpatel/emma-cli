@@ -1,6 +1,5 @@
 import { render, h, Component } from 'ink'
 import { Package } from '../lib/install'
-import Search, { SearchBar } from '../components/Search'
 
 interface EmmaProps {
   onError: (err: Error) => void
@@ -35,17 +34,7 @@ class Emma extends Component<EmmaProps, EmmaState> {
   render() {
     const { query } = this.state
 
-    return (
-      <div>
-        <Search onPackageToggle={this.handlePackageToggle}>
-          <SearchBar
-            label="Search packages 📦 🎧  : "
-            value={query}
-            onChange={this.handleSearch}
-          />
-        </Search>
-      </div>
-    )
+    return <div>Search</div>
   }
 }
 
@@ -85,6 +74,5 @@ export async function run() {
     process.exit()
   }
 
-  // Uses `h` instead of JSX to avoid transpiling this file
   unmount = render(h(Emma, { onError, onExit }))
 }

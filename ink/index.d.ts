@@ -1,16 +1,18 @@
 declare module 'ink' {
-  import {
-    createElement,
-    ComponentType as ReactComponentType,
-    Component as ReactComponent,
-    Fragment as ReactFragment,
-    ComponentClass as ReactComponentClass,
-  } from 'react'
+  import { createElement, Component as ReactComponent } from 'react'
 
-  export class Component<P, S> extends ReactComponent<P, S> {}
-  export class ComponentType<P> extends ReactComponentType<P> {}
-  export class ComponentClass<P> extends ReactComponentClass<P> {}
-  export class Fragment extends Component<{ children: Element }, {}> {}
+  interface ComponentLifecycle<P, S, SS = never> {
+    componentDidMount?(): void
+    shouldComponentUpdate?(
+      nextProps: Readonly<P>,
+      nextState: Readonly<S>,
+      nextContext: any,
+    ): boolean
+    componentWillUnmount?(): void
+    componentDidCatch?(error: Error, errorInfo: ErrorInfo): void
+  }
+
+  export class Component<P, S> {}
   export class Text extends Component<any, any> {}
 
   export const h: typeof createElement
@@ -19,7 +21,11 @@ declare module 'ink' {
 }
 
 declare module 'ink-spinner' {
-  import { Component as ReactComponent } from 'react'
+  import { Component } from 'ink'
 
-  export default class Spinner extends ReactComponent<any, any> {}
+  export default class extends Component<any, any> {}
+}
+
+declare module 'opn' {
+  export default (url: string) => any
 }

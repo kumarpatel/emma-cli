@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import meow from 'meow'
-import updateNotifier from 'update-notifier'
+import * as meow from 'meow'
+import { UpdateNotifier } from 'update-notifier'
 
 import { commands } from './commands'
 
@@ -30,7 +30,9 @@ const cli = meow(
   },
 )
 
-updateNotifier({ pkg: cli.pkg }).notify()
+const updateNotifier = new UpdateNotifier({ pkg: cli.pkg })
+updateNotifier.check()
+updateNotifier.notify()
 
 // Commands
 
