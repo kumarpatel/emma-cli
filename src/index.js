@@ -1,58 +1,56 @@
 #!/usr/bin/env node
 
 import meow from 'meow'
-import { h, render } from 'ink'
 import updateNotifier from 'update-notifier'
 
-import emma from './emma'
+import { commands } from './commands'
 
-// Notify updater
-const pkg = require(`../package.json`)
+// CLI -----------------------------------------------------------------------
 
-updateNotifier({ pkg }).notify()
-
-// CLI
-
-const cli = meow(`
+const cli = meow(
+  `
    Usage
-     $ emma
-
-   Example
-     $ emma -D
-
+     $ emma [<command>]
+   Commands
+     $ ${Object.keys(commands)}
    Options
-     --dev -D      Add to dev dependencies.
+     -- help: get help with command
+   Powered by Algolia, Prisma and Zeit.
+`,
+  {
+    autoHelp: false,
+  }
+)
 
-   Run without package-name to enter live search.
-   Use keyboard to search through package library.
-   Use up/down to select packages.
-   Click enter to trigger the install.   
-`, {
-   flags: {
-      dev: {
-         type: 'boolean',
-         alias: 'D'
-      }
-   }
-})
+// Update Notifier -----------------------------------------------------------
 
-const main = () => {
-   let unmount // eslint-disable-line prefer-const
+updateNotifier({ pkg: cli.pkg }).notify()
 
-   const onError = () => {
-      unmount()
-      process.exit(1)
-   }
+// Command -------------------------------------------------------------------
 
-   const onExit = () => {
-      unmount()
-      process.exit()
-   }
+const shift = ([_, ...xs]) => xs
+const head = ([x, ..._]) => x
 
-   const { dev } = cli.flags
+async function main({ input, flags }) {
+  if (input.length === 0) {
+    if (flags.help) {
+      await cli.showHelp()
+    } else {
+      await commands.search.run(shift(input), flags)
+    }
+    process.exit()
+  }
 
-   // Uses `h` instead of JSX to avoid transpiling this file
-   unmount = render(h(emma, { dev, onError, onExit }))
+  const command = commands[head(input)]
+
+  if (!command) {
+    await cli.showHelp()
+  } else {
+    const subcli = meow(command.options)
+    await command.run(shift(subcli.input), subcli.flags)
+  }
+
+  process.exit()
 }
 
-main()
+main(cli)
