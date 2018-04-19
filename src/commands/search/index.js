@@ -16,6 +16,8 @@ class EmmaSearch extends Component {
 
   handleTogglePackage = pkg => {}
 
+  handleInstall = () => {}
+
   render() {
     const { query, packages } = this.state
 
@@ -24,16 +26,37 @@ class EmmaSearch extends Component {
         <SearchBar
           value={query}
           onChange={this.handleQueryChange}
+          onSubmit={this.handleInstall}
           focus={true}
         />
         <Sections>
-          <PackageSearch
-            query={query}
-            onSelect={this.handleTogglePackage}
-            selected={packages}
-            focus={true}
-          />
-          <PackageSuggestions />
+          {[
+            {
+              name: 'Search',
+              component: (
+                <SearchBar
+                  value={query}
+                  onChange={this.handleQueryChange}
+                  onSubmit={this.handleInstall}
+                />
+              ),
+            },
+            {
+              name: 'Package search',
+              component: (
+                <PackageSearch
+                  query={query}
+                  onSelect={this.handleTogglePackage}
+                  selected={packages}
+                  focus={true}
+                />
+              ),
+            },
+            {
+              name: 'Our suggestions',
+              component: <PackageSuggestions />,
+            },
+          ]}
         </Sections>
       </div>
     )

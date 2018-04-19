@@ -1,11 +1,9 @@
-import { h, Component } from 'ink'
+import { h, Component, Text } from 'ink'
 import PropTypes from 'prop-types'
 
 class Package extends Component {
   static propTypes = {
-    pkg: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-    }).isRequired,
+    pkg: PropTypes.object.isRequired,
     onSubmit: PropTypes.func.isRequired,
     key: PropTypes.string,
     focus: PropTypes.bool,
@@ -36,9 +34,15 @@ class Package extends Component {
   }
 
   render() {
-    const { pkg } = this.props
+    const { focus, pkg } = this.props
 
-    return <div />
+    return (
+      <div>
+        <Text>{pkg.name}</Text>
+        <Text>{pkg.humanDownloadsLast30Days}</Text>
+        <Text>{pkg.owner.name}</Text>
+      </div>
+    )
   }
 }
 

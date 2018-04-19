@@ -1,9 +1,16 @@
-import { h, Component } from 'ink'
+import { h, Component, Text, Fragment } from 'ink'
 import PropTypes from 'prop-types'
+
+import { Focus } from './Focus'
 
 class Sections extends Component {
   static propTypes = {
-    children: PropTypes.arrayOf(PropTypes.node.isRequired).isRequired,
+    children: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        component: PropTypes.node.isRequired,
+      }).isRequired
+    ).isRequired,
   }
 
   state = {
@@ -19,11 +26,15 @@ class Sections extends Component {
   }
 
   handleKeyPress = (ch, key) => {
-    const { cursor } = this.props
+    const { cursor } = this.state
     const { children } = this.props
 
+    if (key.name !== 'tab') {
+      return
+    }
+
     // tab
-    if (cursor < children.length) {
+    if (cursor < children.length - 1) {
       this.setState(({ cursor }) => ({
         cursor: cursor + 1,
       }))
@@ -33,6 +44,23 @@ class Sections extends Component {
   }
 
   render() {
-    return this.props.children
+    const { cursor } = this.state
+
+    return (
+      <span>
+        {this.props.children.map(({ name, component }, i) => (
+          <div>
+            <div>
+              <Focus focus={cursor === i} />
+              <Text>{name}</Text>
+            </div>
+            // TODO
+            {h(() => <component focus={i === cursor} />)}
+          </div>
+        ))}
+      </span>
+    )
   }
 }
+
+export { Sections }

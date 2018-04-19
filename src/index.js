@@ -49,8 +49,6 @@ async function main({ input, flags }) {
     const subcli = meow(command.options)
     await command.run(shift(subcli.input), subcli.flags)
   }
-
-  process.exit()
 }
 
 main(cli)

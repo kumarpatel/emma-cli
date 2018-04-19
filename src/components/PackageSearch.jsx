@@ -1,8 +1,9 @@
-import { h, Component } from 'ink'
+import { h, Component, Text } from 'ink'
 import PropTypes from 'prop-types'
+import Spinner from 'ink-spinner'
 
 import { Package } from './Package'
-import { Loading } from './Loading'
+import { Focus } from './Focus'
 import { search } from '../lib/algolia'
 
 const Status = {
@@ -94,7 +95,28 @@ class PackageSearch extends Component {
   }
 
   render() {
-    return
+    const { cursor, packages, status } = this.state
+    const { onSelect } = this.props
+
+    return (
+      <div>
+        {status === Status.NOT_REQUESTED && <Text>Start typing!</Text>}
+        {status === Status.LOADING && <Spinner />}
+        {status === Status.OBTAINED &&
+          packages.map((pkg, i) => (
+            <span>
+              <Focus foucs={i === cursor} />
+              <Package
+                key={pkg.objectID}
+                pkg={pkg}
+                focus={i === cursor}
+                onSelect={onSelect}
+              />
+            </span>
+          ))}
+        {status === Status.ERROR && <Text red>Something went wrong.</Text>}
+      </div>
+    )
   }
 }
 

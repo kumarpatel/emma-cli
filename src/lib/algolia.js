@@ -1,4 +1,4 @@
-import * as algoliasearch from 'algoliasearch'
+import algoliasearch from 'algoliasearch'
 
 // Client
 export const algolia = {

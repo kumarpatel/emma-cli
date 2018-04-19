@@ -1,10 +1,10 @@
-import { h, Component } from 'ink'
+import { h, Component, Text } from 'ink'
 import PropTypes from 'prop-types'
 import TextInput from 'ink-text-input'
 
 const SearchBar = ({ value, focus, onChange }) => (
   <div>
-    <Text>Serch packages: </Text>
+    <Text bold white>{`Search packages 📦  : `}</Text>
     <TextInput
       value={value}
       focus={focus}
