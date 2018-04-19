@@ -5,22 +5,16 @@ import { PackageSearch } from '../../components/PackageSearch'
 import { PackageSuggestions } from '../../components/PackageSuggestions'
 
 class EmmaSearch extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      query: '',
-      packages: [],
-    }
-
-    this.handleQueryChange = this.handleQueryChange.bind(this)
-    this.handleTogglePackage = this.handleTogglePackage.bind(this)
+  state = {
+    query: '',
+    packages: [],
   }
 
-  handleQueryChange(query) {
+  handleQueryChange = query => {
     this.setState({ query })
   }
 
-  handleTogglePackage(pkg) {}
+  handleTogglePackage = pkg => {}
 
   render() {
     const { query, packages } = this.state

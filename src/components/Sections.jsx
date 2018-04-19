@@ -6,13 +6,8 @@ class Sections extends Component {
     children: PropTypes.arrayOf(PropTypes.node.isRequired).isRequired,
   }
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      cursor: 0,
-    }
-
-    this.handleKeypress = this.handleKeypress.bind(this)
+  state = {
+    cursor: 0,
   }
 
   componentDidMount() {
@@ -23,8 +18,18 @@ class Sections extends Component {
     process.stdin.removeListener('keypress', this.handleKeyPress)
   }
 
-  handleKeyPress(ch, key) {
+  handleKeyPress = (ch, key) => {
+    const { cursor } = this.props
+    const { children } = this.props
+
     // tab
+    if (cursor < children.length) {
+      this.setState(({ cursor }) => ({
+        cursor: cursor + 1,
+      }))
+    } else {
+      this.setState({ cursor: 0 })
+    }
   }
 
   render() {

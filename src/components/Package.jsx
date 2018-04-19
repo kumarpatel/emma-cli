@@ -15,13 +15,6 @@ class Package extends Component {
     focus: false,
   }
 
-  constructor(props) {
-    super(props)
-
-    this.handleKeypress = this.handleKeypress.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-  }
-
   componentDidMount() {
     process.stdin.on('keypress', this.handleKeypress)
   }
@@ -30,13 +23,13 @@ class Package extends Component {
     process.stdin.removeListener('keypress', this.handleKeypress)
   }
 
-  handleKeypress(ch, key) {
+  handleKeypress = (ch, key) => {
     if (key.name === this.props.key) {
       this.handleSubmit()
     }
   }
 
-  handleSubmit() {
+  handleSubmit = () => {
     if (this.props.focus) {
       this.props.onSubmit(this.props.pkg)
     }

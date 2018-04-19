@@ -1,7 +1,6 @@
 {
   "name": "emma-cli",
-  "description":
-    "Great assistant who helps you search Yarn and NPM in your terminal.",
+  "description": "Great assistant who helps you search Yarn and NPM in your terminal.",
   "author": "Matic Zavadlal <matic.zavadlal@gmail.com>",
   "version": "0.0.0-semantic-release",
   "bin": {
@@ -19,7 +18,9 @@
     "semantic-release": "semantic-release"
   },
   "main": "dist/index.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "homepage": "https://github.com/maticzav/emma-cli",
   "keywords": [
     "emma",
@@ -48,6 +49,7 @@
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.40",
     "@babel/core": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.44",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.44",
     "@babel/preset-env": "^7.0.0-beta.40",
     "ava": "^0.25.0",
