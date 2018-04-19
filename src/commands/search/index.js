@@ -1,13 +1,48 @@
 import { h, render, Component } from 'ink'
+import { SearchBar } from '../../components/SearchBar'
+import { Sections } from '../../components/Sections'
+import { PackageSearch } from '../../components/PackageSearch'
+import { PackageSuggestions } from '../../components/PackageSuggestions'
 
 class EmmaSearch extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      query: '',
+      packages: [],
+    }
+
+    this.handleQueryChange = this.handleQueryChange.bind(this)
+    this.handleTogglePackage = this.handleTogglePackage.bind(this)
   }
 
+  handleQueryChange(query) {
+    this.setState({ query })
+  }
+
+  handleTogglePackage(pkg) {}
+
   render() {
-    return <div>foo</div>
+    const { query, packages } = this.state
+
+    return (
+      <div>
+        <SearchBar
+          value={query}
+          onChange={this.handleQueryChange}
+          focus={true}
+        />
+        <Sections>
+          <PackageSearch
+            query={query}
+            onSelect={this.handleTogglePackage}
+            selected={packages}
+            focus={true}
+          />
+          <PackageSuggestions />
+        </Sections>
+      </div>
+    )
   }
 }
 
