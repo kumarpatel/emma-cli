@@ -90,6 +90,7 @@ class PackageSearch extends Component {
         })
       }
     } catch (err) {
+      throw err
       this.setState({ status: Status.ERROR })
     }
   }

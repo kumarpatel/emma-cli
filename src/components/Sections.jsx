@@ -8,7 +8,7 @@ class Sections extends Component {
     children: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
-        component: PropTypes.node.isRequired,
+        component: PropTypes.func.isRequired,
       }).isRequired
     ).isRequired,
   }
@@ -52,10 +52,9 @@ class Sections extends Component {
           <div>
             <div>
               <Focus focus={cursor === i} />
-              <Text>{name}</Text>
+              <Text yellow={cursor === i}>{name}</Text>
             </div>
-            // TODO
-            {h(() => <component focus={i === cursor} />)}
+            {component({ focus: cursor === i })}
           </div>
         ))}
       </span>

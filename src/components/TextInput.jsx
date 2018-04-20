@@ -3,16 +3,20 @@ import PropTypes from 'prop-types'
 import hasAnsi from 'has-ansi'
 
 class TextInput extends Component {
-  constructor(props) {
-    super(props)
-
-    this.handleKeyPress = this.handleKeyPress.bind(this)
+  propTypes = {
+    value: PropTypes.string,
+    placeholder: PropTypes.string,
+    onChange: PropTypes.func,
+    onSubmit: PropTypes.func,
+    focus: PropTypes.bool,
   }
 
-  render({ value, placeholder }) {
-    const hasValue = value.length > 0
-
-    return <Text dim={!hasValue}>{hasValue ? value : placeholder}</Text>
+  defaultProps = {
+    value: '',
+    placeholder: '',
+    onChange: () => {},
+    onSubmit: () => {},
+    focus: true,
   }
 
   componentDidMount() {
@@ -23,12 +27,12 @@ class TextInput extends Component {
     process.stdin.removeListener('keypress', this.handleKeyPress)
   }
 
-  handleKeyPress(ch, key) {
+  handleKeyPress = (ch, key) => {
     if (!this.props.focus) {
       return
     }
 
-    if (hasAnsi(key.sequence)) {
+    if (hasAnsi(key.sequence) || key.name === 'tab') {
       return
     }
 
@@ -51,22 +55,12 @@ class TextInput extends Component {
       onChange(value + ch)
     }
   }
-}
 
-TextInput.propTypes = {
-  value: PropTypes.string,
-  placeholder: PropTypes.string,
-  onChange: PropTypes.func,
-  onSubmit: PropTypes.func,
-  focus: PropTypes.bool,
-}
+  render({ value, placeholder }) {
+    const hasValue = value.length > 0
 
-TextInput.defaultProps = {
-  value: '',
-  placeholder: '',
-  onChange: () => {},
-  onSubmit: () => {},
-  focus: true,
+    return <Text dim={!hasValue}>{hasValue ? value : placeholder}</Text>
+  }
 }
 
 export { TextInput }

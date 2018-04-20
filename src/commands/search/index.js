@@ -1,4 +1,5 @@
 import { h, render, Component } from 'ink'
+import { InstantSearch } from 'react-instantsearch/native'
 import { SearchBar } from '../../components/SearchBar'
 import { Sections } from '../../components/Sections'
 import { PackageSearch } from '../../components/PackageSearch'
@@ -23,41 +24,33 @@ class EmmaSearch extends Component {
 
     return (
       <div>
-        <SearchBar
-          value={query}
-          onChange={this.handleQueryChange}
-          onSubmit={this.handleInstall}
-          focus={true}
-        />
-        <Sections>
-          {[
-            {
-              name: 'Search',
-              component: (
-                <SearchBar
-                  value={query}
-                  onChange={this.handleQueryChange}
-                  onSubmit={this.handleInstall}
-                />
-              ),
-            },
-            {
-              name: 'Package search',
-              component: (
-                <PackageSearch
-                  query={query}
-                  onSelect={this.handleTogglePackage}
-                  selected={packages}
-                  focus={true}
-                />
-              ),
-            },
-            {
-              name: 'Our suggestions',
-              component: <PackageSuggestions />,
-            },
-          ]}
-        </Sections>
+        <InstantSearch>
+          <SearchBar
+            value={query}
+            onChange={this.handleQueryChange}
+            onSubmit={this.handleInstall}
+            focus={true}
+          />
+          <Sections>
+            {[
+              {
+                name: 'Package search',
+                component: ({ focus }) => (
+                  <PackageSearch
+                    query={query}
+                    onSelect={this.handleTogglePackage}
+                    selected={packages}
+                    focus={focus}
+                  />
+                ),
+              },
+              {
+                name: 'Our suggestions',
+                component: ({ focus }) => <PackageSuggestions focus={focus} />,
+              },
+            ]}
+          </Sections>
+        </InstantSearch>
       </div>
     )
   }
