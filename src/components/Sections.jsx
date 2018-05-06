@@ -52,7 +52,7 @@ class Sections extends Component {
           <div>
             <div>
               <Focus focus={cursor === i} />
-              <Text yellow={cursor === i}>{name}</Text>
+              <Text blue={cursor === i}>{name}</Text>
             </div>
             {component({ focus: cursor === i })}
           </div>
