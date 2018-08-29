@@ -4,7 +4,7 @@ import meow from 'meow'
 import { h, render } from 'ink'
 import updateNotifier from 'update-notifier'
 
-import emma from './emma'
+import alfred from './emma'
 
 // Notify updater
 const pkg = require(`../package.json`)
@@ -52,7 +52,7 @@ const main = () => {
    const { dev } = cli.flags
 
    // Uses `h` instead of JSX to avoid transpiling this file
-   unmount = render(h(emma, { dev, onError, onExit }))
+   unmount = render(h(alfred, { dev, onError, onExit }))
 }
 
 main()
